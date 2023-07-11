@@ -12,13 +12,13 @@
 
 ## ToDo
 
-- 目前利用ChatGLM2《甄嬛传》中的一些台词得到了初代的chat-甄嬛聊天模型。
+- [x] 目前利用ChatGLM2《甄嬛传》中的一些台词得到了初代的chat-甄嬛聊天模型。
 
-- 下一步打算利用chatgpt-3.5 api和本身制作好的《甄嬛传》台词数据集制作一些多轮对话数据集并进行训练。
+- [ ] 利用chatgpt-3.5 api和本身制作好的《甄嬛传》台词数据集制作一些多轮对话数据集并进行训练。
 
-- 使用多种微调方法对ChatGLM2训练微调，找到最适合聊天机器人的微调方法。
+- [ ] 使用多种微调方法对ChatGLM2训练微调，找到最适合聊天机器人的微调方法。
 
-- 使用Langchain与huanhuan-chat结合。
+- [ ] 使用Langchain与huanhuan-chat结合。
 
 ## Demo
 
@@ -62,4 +62,4 @@ CUDA_VISIBLE_DEVICES=0 python src/train_sft.py \
 
 ## 人员
 
-不要葱姜蒜完成了初代训练
+[不要葱姜蒜](https://github.com/KMnO4-zx) 完成了初代训练

@@ -20,6 +20,8 @@
 
 - [ ] 使用Langchain与huanhuan-chat结合。
 
+- [ ] 使用chatgpt对《甄嬛传》小说中提取原文对话，生成数据集。（可以做普及版，任意一本小说生成数据集，训练lora，***character AI！***）
+
 ## Demo
 
 ```
@@ -38,6 +40,21 @@
 ![](image/午饭吃什么.png)
 
 ![](image/晚上有些心累.png)
+
+## Quick Start
+
+- 克隆本仓库
+
+```
+git clone https://github.com/KMnO4-zx/huanhuan-chat.git
+cd huanhuan-chat
+```
+
+- 替换`scr/web_demo.py`中的原始chatglm2-6b模型路径，运行脚本。
+
+```
+python src/web_demo.py
+```
 
 ## 训练参数
 

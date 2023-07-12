@@ -12,7 +12,7 @@
 
 ## News
 
-[2023.07.12]：完成奖励模型训练，新的小伙伴加入项目。
+[2023.07.12]：完成RM、RLHF训练（存在问题），新的小伙伴加入项目。
 
 [2023.07.11]：优化数据集，解决prompt句末必须携带标点符号的问题。
 
@@ -28,6 +28,9 @@
 - [ ] 基于《后宫甄嬛传》原著小说，构建训练问答对
 
 模型优化：
+
+- [ ] 解决RM、RLHF LoRA模型加载问题
+
 - [ ] 使用多种微调方法对ChatGLM2训练微调，找到最适合聊天机器人的微调方法。
 - [ ] 尝试多种开源大模型（Baichuan、ChatGLM等），找到效果最好的开源大模型
 
@@ -56,6 +59,8 @@
 - 那还真是，皇上多保重身体吧。
 ```
 
+![](image/侍寝.png)
+
 ![](image/午饭吃什么.png)
 
 ![](image/晚上有些心累.png)
@@ -75,27 +80,9 @@ cd huanhuan-chat
 python src/web_demo.py
 ```
 
-## 训练参数
+## 人员贡献
 
-```shell
-CUDA_VISIBLE_DEVICES=0 python src/train_sft.py \
-    --model_name_or_path your model path \
-    --use_v2 \
-    --do_train \
-    --dataset zhenhuan \
-    --finetuning_type lora \
-    --lora_rank 8 \
-    --output_dir ./output \
-    --per_device_train_batch_size 4 \
-    --gradient_accumulation_steps 4 \
-    --lr_scheduler_type cosine \
-    --logging_steps 10 \
-    --save_steps 1000 \
-    --learning_rate 5e-5 \
-    --num_train_epochs 4.0 \
-    --fp16
-```
+[不要葱姜蒜](https://github.com/KMnO4-zx)：整理数据集，完成SFT，RM训练。
 
-## 人员
+[Logan Zou](https://github.com/nowadays0421)：完成RLHF训练。
 
-[不要葱姜蒜](https://github.com/KMnO4-zx) 完成了初代训练

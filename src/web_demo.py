@@ -8,18 +8,9 @@ import torch
 import mdtex2html
 import gradio as gr
 
-from utils import prepare_infer_args, auto_configure_device_map, load_pretrained
-from transformers.utils.versions import require_version
-
 from peft import PeftModel
 from transformers import AutoTokenizer, AutoModel
 
-
-require_version("gradio>=3.30.0", "To fix: pip install gradio>=3.30.0")
-
-
-# model_args, finetuning_args, generating_args = prepare_infer_args()
-# model, tokenizer = load_pretrained(model_args, finetuning_args)
 
 model_path = "../../siton-object-cfa37485d3744c6f9362dd85c7ec9e53/chatglm2"
 model = AutoModel.from_pretrained(
@@ -27,7 +18,7 @@ model = AutoModel.from_pretrained(
 tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
 
 #  给你的模型加上嬛嬛LoRA! output: lora存放路径
-model = PeftModel.from_pretrained(model, "output/lora").half()
+model = PeftModel.from_pretrained(model, "output/sft").half()
 
 model.eval()
 
@@ -102,7 +93,7 @@ with gr.Blocks() as demo:
 
     gr.HTML("""
     <h1 align="center">
-             Chat-嬛嬛 ChatGLM2 LoRA Tuning
+             Chat-嬛嬛 ChatGLM2
     </h1>
     """)
 

@@ -107,6 +107,6 @@ python src/train_sft.py --model_name_or_path ./basemodel --use_v2 --do_train --d
 
 [不要葱姜蒜](https://github.com/KMnO4-zx)：整理数据集，完成SFT，RM训练。
 
-[Logan Zou](https://github.com/nowadays0421)：完成RLHF训练。
+[Logan Zou](https://github.com/nowadays0421)：完成RLHF训练。完成BaiChuan-7B的Lora微调
 
 [coderdeepstudy](https://github.com/coderdeepstudy)：Window环境下的Lora微调。

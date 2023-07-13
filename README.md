@@ -1,29 +1,60 @@
-# Chat-甄嬛 huanhuan-chat
+# Chat-嬛嬛
+
+（Logo预留位置）
 
 **Chat-甄嬛**是利用《甄嬛传》剧本中所有关于甄嬛的台词和语句，基于**ChatGLM2**进行**LoRA微调**得到的模仿甄嬛语气的聊天语言模型。
 
 > 甄嬛，小说《后宫·甄嬛传》和电视剧《甄嬛传》中的女一号，核心女主角。原名甄玉嬛，嫌玉字俗气而改名甄嬛，为汉人甄远道之女，后被雍正赐姓钮祜禄氏，抬旗为满洲上三旗，获名“钮祜禄·甄嬛”。同沈眉庄、安陵容参加选秀，因容貌酷似纯元皇后而被选中。入宫后面对华妃的步步紧逼，沈眉庄被冤、安陵容变心，从偏安一隅的青涩少女变成了能引起血雨腥风的宫斗老手。雍正发现年氏一族的野心后令其父甄远道剪除，甄嬛也于后宫中用她的连环巧计帮皇帝解决政敌，故而深得雍正爱待。几经周折，终于斗垮了嚣张跋扈的华妃。甄嬛封妃时遭皇后宜修暗算，被皇上嫌弃，生下女儿胧月后心灰意冷，自请出宫为尼。然得果郡王爱慕，二人相爱，得知果郡王死讯后立刻设计与雍正再遇，风光回宫。此后甄父冤案平反、甄氏复起，她也生下双生子，在滴血验亲等各种阴谋中躲过宜修的暗害，最后以牺牲自己亲生胎儿的方式扳倒了幕后黑手的皇后。但雍正又逼甄嬛毒杀允礼，以测试甄嬛真心，并让已经生产过孩子的甄嬛去准格尔和亲。甄嬛遂视皇帝为最该毁灭的对象，大结局道尽“人类的一切争斗，皆因统治者的不公不义而起”，并毒杀雍正。四阿哥弘历登基为乾隆，甄嬛被尊为圣母皇太后，权倾朝野，在如懿传中安度晚年。
 
-项目最主要目的是学习***transformers***和*大模型微调*技术，目前LoRA微调技术参考[ChatGLM-Efficient-Tuning](https://github.com/hiyouga/ChatGLM-Efficient-Tuning)项目，欢迎给原作者项目star，所使用的[ChatGLM2-6B](https://github.com/THUDM/ChatGLM2-6B)模型也欢迎大家前去star。
+项目最主要目的是学习***transformers***和*大模型微调技术*，目前LoRA微调技术参考[ChatGLM-Efficient-Tuning](https://github.com/hiyouga/ChatGLM-Efficient-Tuning)项目，欢迎给原作者项目star，所使用的[ChatGLM2-6B](https://github.com/THUDM/ChatGLM2-6B)模型也欢迎大家前去star。
 
-欢迎更多小伙伴参与到大模型微调学习当中来哦~
+## 使用方法
 
-***想一起学习的小伙伴可以加入我们！***
+### 环境安装
 
-## News
+首先下载本仓库，再用pip安装环境依赖：
 
-[2023.07.12]：完成RM、RLHF训练（存在问题），新的小伙伴加入项目。
+```shell
+git clone https://github.com/KMnO4-zx/huanhuan-chat.git
+cd ./huanhuan-chat
+pip install -r requirements.txt
+```
 
-[2023.07.11]：优化数据集，解决prompt句末必须携带标点符号的问题。
+### 代码调用
 
-[2023.07.09]：完成初次LoRA训练。
+```python
+>>> from peft import PeftModel
+>>> from transformers import AutoTokenizer, AutoModel
+>>> model_path = "THUDM/chatglm2-6b"
+>>> model = AutoModel.from_pretrained(model_path, trust_remote_code=True).half().cuda()
+>>> tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
+>>> #  给你的模型加上嬛嬛LoRA! 
+>>> model = PeftModel.from_pretrained(model, "lora/sft").half()
+>>> model.eval()
+>>> response, history = model.chat(tokenizer, "你好", history=history)
+>>> print(response)
+```
+
+```
+皇上好，我是甄嬛，家父是大理寺少卿甄远道。
+```
+
+### 网页demo
+
+首先需要到[Hugging Face Hub](https://huggingface.co/THUDM/chatglm2-6b)下载ChatGLM2-6B的模型文件，然后替换`scrupt/web_demo.py`中的`model_path`为你下载的模型地址，然后运行下面的命令：
+
+```
+python ./script/web_demo.py
+```
 
 ## ToDo
 
 初版：
+
 - [x] 基于《甄嬛传》剧本、ChatGLM2、Lora 微调得到初代的chat-甄嬛聊天模型。
 
 数据优化：
+
 - [ ] 结合 ChatGPT API，优化训练问答对
 - [ ] 基于《后宫甄嬛传》原著小说，构建训练问答对
 
@@ -35,6 +66,7 @@
 - [ ] 尝试多种开源大模型（Baichuan、ChatGLM等），找到效果最好的开源大模型
 
 应用优化：
+
 - [ ] 实现甄嬛语音接入
 - [ ] 实现支持并发、高可用性部署
 - [ ] 提升推理速度
@@ -42,71 +74,19 @@
 - [ ] 使用Langchain与huanhuan-chat结合。
 
 最终目标：
+
 - [ ] 实现普及版流程，支持对任意一本小说、电视剧生成数据集，训练***个性化AI —— character AI！***）
 
-## Demo
+## 案例展示
 
-```
-- 你是谁？
-- 我是甄嬛，家父是大理寺少卿甄远道。你就这么对我讲话？
+![侍寝](image/侍寝.png)
 
-- 朕饿了，午饭吃什么？
-- 皇上，这是瞧食，您尝尝吧。
+![晚上有些心累](image/晚上有些心累.png)
 
-- 朕晚上有些心累。
-- 皇上有什么不舒服吗？
-- 近日偶感风寒，略有不适。
-- 那还真是，皇上多保重身体吧。
-```
+![午饭吃什么](image/午饭吃什么.png)
 
-![](image/侍寝.png)
+## 赞助
 
-![](image/午饭吃什么.png)
+接受私人定制
 
-![](image/晚上有些心累.png)
-
-## Quick Start
-
-- 克隆本仓库
-
-```
-git clone https://github.com/KMnO4-zx/huanhuan-chat.git
-cd huanhuan-chat
-```
-
-- 替换`scr/web_demo.py`中的原始chatglm2-6b模型路径，运行脚本。
-
-```
-python src/web_demo.py
-```
-## Window环境下的Lora微调-脱坑记录
-
-```
-1.cd 到微调项目的根目录
-2. 执行以下命令
-# 创建微调模型输出文件夹
-mkdir outmodel
-# 用Conda创建新环境
-conda create --name chatglm2-6b-lora python=3.10
-# 激活新环境
-conda activate chatglm2-6b-lora
-# 下载依赖库
-pip install -r requirements.txt
-# transformers 存在诸多问题，建议按照后面的步骤下载huggingface的transformers
-pip uninstall transformers
-# 安装了 transformers-4.31.0.dev0
-pip install git+https://github.com/huggingface/transformers
-# CUDA 11.8 - 官方参考
-pip install torch==2.0.0+cu118 torchvision==0.15.1+cu118 torchaudio==2.0.1 --index-url https://download.pytorch.org/whl/cu118
-# 如果您想在 Windows 上启用 LoRA(QLoRA) 或冻结量化，则需要安装预构建版本的bitsandbytes库，该库支持 CUDA 11.1 至 12.1。
-pip install https://github.com/jllllll/bitsandbytes-windows-webui/releases/download/wheels/bitsandbytes-0.39.1-py3-none-win_amd64.whl
-# Rola微调，具体参数参考：https://github.com/hiyouga/ChatGLM-Efficient-Tuning/wiki/Usage
-python src/train_sft.py --model_name_or_path ./basemodel --use_v2 --do_train --dataset self_cognition --finetuning_type lora --lora_rank 8 --output_dir outmodel --per_device_train_batch_size 4 --gradient_accumulation_steps 4 --lr_scheduler_type cosine --logging_steps 10 --save_steps 1000 --learning_rate 5e-5 --num_train_epochs 12.0 --fp16
-```
-## 人员贡献
-
-[不要葱姜蒜](https://github.com/KMnO4-zx)：整理数据集，完成SFT，RM训练。
-
-[Logan Zou](https://github.com/nowadays0421)：完成RLHF训练。完成BaiChuan-7B的Lora微调
-
-[coderdeepstudy](https://github.com/coderdeepstudy)：Window环境下的Lora微调。
+（二维码区域）

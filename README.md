@@ -80,6 +80,7 @@ cd huanhuan-chat
 python src/web_demo.py
 ```
 ## Window环境下的Lora微调-脱坑记录
+
 ```
 1.cd 到微调项目的根目录
 2. 执行以下命令
@@ -108,3 +109,4 @@ python src/train_sft.py --model_name_or_path ./basemodel --use_v2 --do_train --d
 
 [Logan Zou](https://github.com/nowadays0421)：完成RLHF训练。
 
+[coderdeepstudy](https://github.com/coderdeepstudy)：Window环境下的Lora微调。

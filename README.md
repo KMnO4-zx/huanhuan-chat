@@ -12,7 +12,7 @@
 
 ## News
 
-[2023.07.12]：完成奖励模型训练，新的小伙伴加入项目。
+[2023.07.12]：完成RM、RLHF训练（存在问题），新的小伙伴加入项目。
 
 [2023.07.11]：优化数据集，解决prompt句末必须携带标点符号的问题。
 
@@ -28,6 +28,9 @@
 - [ ] 基于《后宫甄嬛传》原著小说，构建训练问答对
 
 模型优化：
+
+- [ ] 解决RM、RLHF LoRA模型加载问题
+
 - [ ] 使用多种微调方法对ChatGLM2训练微调，找到最适合聊天机器人的微调方法。
 - [ ] 尝试多种开源大模型（Baichuan、ChatGLM等），找到效果最好的开源大模型
 
@@ -56,6 +59,8 @@
 - 那还真是，皇上多保重身体吧。
 ```
 
+![](image/侍寝.png)
+
 ![](image/午饭吃什么.png)
 
 ![](image/晚上有些心累.png)
@@ -74,28 +79,34 @@ cd huanhuan-chat
 ```
 python src/web_demo.py
 ```
+## Window环境下的Lora微调-脱坑记录
 
-## 训练参数
-
-```shell
-CUDA_VISIBLE_DEVICES=0 python src/train_sft.py \
-    --model_name_or_path your model path \
-    --use_v2 \
-    --do_train \
-    --dataset zhenhuan \
-    --finetuning_type lora \
-    --lora_rank 8 \
-    --output_dir ./output \
-    --per_device_train_batch_size 4 \
-    --gradient_accumulation_steps 4 \
-    --lr_scheduler_type cosine \
-    --logging_steps 10 \
-    --save_steps 1000 \
-    --learning_rate 5e-5 \
-    --num_train_epochs 4.0 \
-    --fp16
 ```
+1.cd 到微调项目的根目录
+2. 执行以下命令
+# 创建微调模型输出文件夹
+mkdir outmodel
+# 用Conda创建新环境
+conda create --name chatglm2-6b-lora python=3.10
+# 激活新环境
+conda activate chatglm2-6b-lora
+# 下载依赖库
+pip install -r requirements.txt
+# transformers 存在诸多问题，建议按照后面的步骤下载huggingface的transformers
+pip uninstall transformers
+# 安装了 transformers-4.31.0.dev0
+pip install git+https://github.com/huggingface/transformers
+# CUDA 11.8 - 官方参考
+pip install torch==2.0.0+cu118 torchvision==0.15.1+cu118 torchaudio==2.0.1 --index-url https://download.pytorch.org/whl/cu118
+# 如果您想在 Windows 上启用 LoRA(QLoRA) 或冻结量化，则需要安装预构建版本的bitsandbytes库，该库支持 CUDA 11.1 至 12.1。
+pip install https://github.com/jllllll/bitsandbytes-windows-webui/releases/download/wheels/bitsandbytes-0.39.1-py3-none-win_amd64.whl
+# Rola微调，具体参数参考：https://github.com/hiyouga/ChatGLM-Efficient-Tuning/wiki/Usage
+python src/train_sft.py --model_name_or_path ./basemodel --use_v2 --do_train --dataset self_cognition --finetuning_type lora --lora_rank 8 --output_dir outmodel --per_device_train_batch_size 4 --gradient_accumulation_steps 4 --lr_scheduler_type cosine --logging_steps 10 --save_steps 1000 --learning_rate 5e-5 --num_train_epochs 12.0 --fp16
+```
+## 人员贡献
 
-## 人员
+[不要葱姜蒜](https://github.com/KMnO4-zx)：整理数据集，完成SFT，RM训练。
 
-[不要葱姜蒜](https://github.com/KMnO4-zx) 完成了初代训练
+[Logan Zou](https://github.com/nowadays0421)：完成RLHF训练。
+
+[coderdeepstudy](https://github.com/coderdeepstudy)：Window环境下的Lora微调。

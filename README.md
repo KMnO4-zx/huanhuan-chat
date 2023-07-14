@@ -29,7 +29,7 @@ pip install -r requirements.txt
 >>> model = AutoModel.from_pretrained(model_path, trust_remote_code=True).half().cuda()
 >>> tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
 >>> #  给你的模型加上嬛嬛LoRA! 
->>> model = PeftModel.from_pretrained(model, "lora/sft").half()
+>>> model = PeftModel.from_pretrained(model, "output/sft").half()
 >>> model.eval()
 >>> response, history = model.chat(tokenizer, "你好", history=history)
 >>> print(response)

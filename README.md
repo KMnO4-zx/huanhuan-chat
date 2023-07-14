@@ -52,7 +52,7 @@ python ./script/web_demo.py
 如果你想本地复现 Chat-甄嬛，直接运行微调脚本即可：
 
 ```
-CUDA_VISIBLE_DEVICES=0 python script/train_bash.py \
+CUDA_VISIBLE_DEVICES=0 python src/train_bash.py \
     --model_name_or_path THUDM/chatglm2-6b \
     --stage sft \
     --use_v2 \
@@ -77,7 +77,7 @@ CUDA_VISIBLE_DEVICES=0 python script/train_bash.py \
 如果你想尝试基于 BaiChuan-7B 微调，请运行以下命令：
 
 ```
-CUDA_VISIBLE_DEVICES=0 python script/train_baichuan.py \
+CUDA_VISIBLE_DEVICES=0 python src/train_baichuan.py \
     --lora_rank 8 \
     --per_device_train_batch_size 64 \
     --gradient_accumulation_steps 1 \

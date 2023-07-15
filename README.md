@@ -70,7 +70,7 @@ CUDA_VISIBLE_DEVICES=0 python src/train_bash.py \
     --num_train_epochs 4.0 \
     --fp16
 ```
-如果你想使用自定义数据集，请根据 [甄嬛对话集](/data/zhenhuan.json) 的数据集格式构建类似对话集并存放在对应目录下，修改 dataset 参数即可。**后续我们将提供从指定小说或剧本一站式构建对话集的脚本，敬请关注**。
+如果你想使用自定义数据集，请根据 [甄嬛对话集](/data/zhenhuan.json) 的数据集格式构建类似对话集并存放在对应目录下，修改`dataset_info`参数即可。**后续我们将提供从指定小说或剧本一站式构建对话集的脚本，敬请关注**。
 
 如果你想使用本地已下载的 ChatGLM2-6B 模型，修改 model_name_or_path 即可。
 

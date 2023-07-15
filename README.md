@@ -93,6 +93,12 @@ CUDA_VISIBLE_DEVICES=0 python src/train_baichuan.py \
 
 限于目前代码还比较粗糙，修改模型路径、数据集路径等参数，可在 train_baichuan.py 中修改全局变量。
 
+### 语音包readme
+
+[readme](./generation_dataset/v_gpt_huanhuan/radme.md)
+
+
+
 ## News
 
 [2023.07.14]：完成 BaiChuan 模型训练及 web 调用，完成初步语音支持及数据集处理。

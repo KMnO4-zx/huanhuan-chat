@@ -8,6 +8,8 @@
 
 目前，本项目已实现分别基于 ChatGLM2、BaiChuan 等大模型，使用 LoRA 微调的多版本 Chat-甄嬛，具备甄嬛人设，欢迎大家体验交流~目前LoRA微调技术参考[ChatGLM-Efficient-Tuning](https://github.com/hiyouga/ChatGLM-Efficient-Tuning)项目，欢迎给原作者项目star，所使用的[ChatGLM2-6B](https://github.com/THUDM/ChatGLM2-6B)模型、[BaiChuan](https://github.com/baichuan-inc/Baichuan-7B)模型也欢迎大家前去star。
 
+bilibili介绍：[我也有自己的甄嬛啦！（chat嬛嬛项目）](https://www.bilibili.com/video/BV1dX4y1a73S/?spm_id_from=333.880.my_history.page.click&vd_source=1a432a45372ea0a0d1ec88a20d9cef2c)
+
 ## 使用方法
 
 ### 环境安装

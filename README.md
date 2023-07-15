@@ -95,7 +95,7 @@ CUDA_VISIBLE_DEVICES=0 python src/train_baichuan.py \
 
 ### 语音包readme
 
-[readme](./generation_dataset/v_gpt_huanhuan/radme.md)
+[readme](./generation_dataset/v_gpt_huanhuan/rademe.md)
 
 
 

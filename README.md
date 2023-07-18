@@ -95,6 +95,31 @@ CUDA_VISIBLE_DEVICES=0 python src/train_baichuan.py \
 
 限于目前代码还比较粗糙，修改模型路径、数据集路径等参数，可在 train_baichuan.py 中修改全局变量。
 
+## Window环境下的Lora微调-脱坑记录
+
+```
+1.cd 到微调项目的根目录
+2. 执行以下命令
+# 创建微调模型输出文件夹
+mkdir outmodel
+# 用Conda创建新环境
+conda create --name chatglm2-6b-lora python=3.10
+# 激活新环境
+conda activate chatglm2-6b-lora
+# 下载依赖库
+pip install -r requirements.txt
+# transformers 存在诸多问题，建议按照后面的步骤下载huggingface的transformers
+pip uninstall transformers
+# 安装了 transformers-4.31.0.dev0
+pip install git+https://github.com/huggingface/transformers
+# CUDA 11.8 - 官方参考
+pip install torch==2.0.0+cu118 torchvision==0.15.1+cu118 torchaudio==2.0.1 --index-url https://download.pytorch.org/whl/cu118
+# 如果您想在 Windows 上启用 LoRA(QLoRA) 或冻结量化，则需要安装预构建版本的bitsandbytes库，该库支持 CUDA 11.1 至 12.1。
+pip install https://github.com/jllllll/bitsandbytes-windows-webui/releases/download/wheels/bitsandbytes-0.39.1-py3-none-win_amd64.whl
+# Rola微调，具体参数参考：https://github.com/hiyouga/ChatGLM-Efficient-Tuning/wiki/Usage
+python src/train_sft.py --model_name_or_path ./basemodel --use_v2 --do_train --dataset self_cognition --finetuning_type lora --lora_rank 8 --output_dir outmodel --per_device_train_batch_size 4 --gradient_accumulation_steps 4 --lr_scheduler_type cosine --logging_steps 10 --save_steps 1000 --learning_rate 5e-5 --num_train_epochs 12.0 --fp16
+```
+
 ### 语音包readme
 
 [readme](./generation_dataset/v_gpt_huanhuan/readme.md)

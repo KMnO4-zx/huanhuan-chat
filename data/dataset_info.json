@@ -150,7 +150,7 @@
   "zhenhuan": {
     "file_name": "zhenhuan.json"
   },
-  "paper_lebel": {
-    "file_name": "paper_lebel.json"
+  "paper_label": {
+    "file_name": "paper_label.json"
   }
 }

@@ -6,7 +6,7 @@
 
 本项目预计以《甄嬛传》为切入点，打造一套基于小说、剧本的**个性化 AI** 微调大模型完整流程，目标是让每一个人都可以基于心仪的小说、剧本微调一个属于自己的、契合小说人设、能够流畅对话的个性化大模型。
 
-目前，本项目已实现分别基于 ChatGLM2、BaiChuan 等大模型，使用 LoRA 微调的多版本 Chat-甄嬛，具备甄嬛人设，欢迎大家体验交流~目前LoRA微调技术参考[ChatGLM-Efficient-Tuning](https://github.com/hiyouga/ChatGLM-Efficient-Tuning)项目，欢迎给原作者项目star，所使用的[ChatGLM2-6B](https://github.com/THUDM/ChatGLM2-6B)模型、[BaiChuan](https://github.com/baichuan-inc/Baichuan-7B)模型也欢迎大家前去star。
+目前，本项目已实现分别基于 ChatGLM2、BaiChuan 等大模型，使用 LoRA 微调的多版本 Chat-甄嬛，具备甄嬛人设，欢迎大家体验交流~目前LoRA微调技术参考[ChatGLM-Efficient-Tuning](https://github.com/hiyouga/ChatGLM-Efficient-Tuning)项目和[LLaMA-Efficient-Tuning](https://github.com/hiyouga/LLaMA-Efficient-Tuning)项目，欢迎给原作者项目star，所使用的[ChatGLM2-6B](https://github.com/THUDM/ChatGLM2-6B)模型、[BaiChuan](https://github.com/baichuan-inc/Baichuan-7B)模型也欢迎大家前去star。
 
 bilibili介绍：[我也有自己的甄嬛啦！（chat嬛嬛项目）](https://www.bilibili.com/video/BV1dX4y1a73S/?spm_id_from=333.880.my_history.page.click&vd_source=1a432a45372ea0a0d1ec88a20d9cef2c)
 

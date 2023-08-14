@@ -33,6 +33,7 @@ class FinetuneArguments:
     skip_overlength: bool = field(default=False)
     continue_training: bool = field(default=False)
     checkpoint: str = field(default=None)
+    log_name: str = field(default="log")
 
 
 class CastOutputToFloat(nn.Sequential):
@@ -177,19 +178,19 @@ class ModifiedTrainer13B(Trainer):
 
 def main():
 
+    # Parse 命令行参数
+    finetune_args, training_args = HfArgumentParser(
+        (FinetuneArguments, TrainingArguments)
+    ).parse_args_into_dataclasses()
+
     log_id     = 'train'  
     log_dir    = f'../../log/'
-    log_name   = '8-14-test-train.log'
+    log_name   = '{}.log'.format(finetune_args.log_name)
     log_level  = 'info'
 
     # 初始化日志
     logger = Logger(log_id, log_dir, log_name, log_level).logger
     logger.info('开始 LoRA 训练')
-
-    # Parse 命令行参数
-    finetune_args, training_args = HfArgumentParser(
-        (FinetuneArguments, TrainingArguments)
-    ).parse_args_into_dataclasses()
     
     logger.debug("命令行参数")
     logger.debug("finetune_args:")

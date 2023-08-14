@@ -1,163 +1,198 @@
-import json
-import os
-import time
+#!/usr/bin/env python
+# -*- encoding: utf-8 -*-
+'''
+@File    :   webui_demo.py
+@Time    :   2023/08/14 17:15:05
+@Author  :   Logan Zou 
+@Version :   1.0
+@Contact :   loganzou0421@163.com
+@License :   (C)Copyright 2017-2018, Liugroup-NLPR-CASIA
+@Desc    :   Chat-huanhuan GUI 部署
+'''
 
+import torch
+import mdtex2html
 import gradio as gr
-from transformers import AutoModel, AutoTokenizer
 
 from peft import PeftModel
+from transformers import AutoTokenizer, AutoModel, GenerationConfig, AutoModelForCausalLM, HfArgumentParser
+from dataclasses import dataclass, field
+import sys
+# 导入 log 模块目录
+sys.path.append("../../")
+from log.logutli import Logger
 
-history = []
-readable_history = []
-model_path = "THUDM/chatglm2-6b"
+@dataclass
+class RunArguments:
+    # 运行参数
+    model_path: str = field(default = "../../dataset/model")
+    base_model: str = field(default = "ChatGLM2")
+    lora_path: str = field(default = "../../dataset/output")
+    log_name: str = field(default="log")
 
-tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
-model = AutoModel.from_pretrained(
-    model_path, trust_remote_code=True).half().cuda()
+# Parse 命令行参数
+run_args = HfArgumentParser(RunArguments).parse_args_into_dataclasses()[0]
 
-#  给你的模型加上嬛嬛LoRA! output: lora存放路径
-model = PeftModel.from_pretrained(model, "output/lora").half()
+# 日志设置
+log_id     = 'run_gui'  
+log_dir    = f'../../log/'
+log_name   = '{}.log'.format(run_args.log_name)
+log_level  = 'debug'
 
-model.eval()
+# 初始化日志
+logger = Logger(log_id, log_dir, log_name, log_level).logger
+logger.info('部署图形化界面')
+
+logger.debug("命令行参数")
+logger.debug("run_args:")
+logger.debug(run_args.__repr__())
+
+if "ChatGLM" in run_args.base_model:
+    model = AutoModel.from_pretrained(
+        run_args.model_path, trust_remote_code=True).half().cuda()
+    logger.info("从{}加载模型成功".format(run_args.model_path))
+elif "BaiChuan" in run_args.base_model:
+    model = AutoModelForCausalLM.from_pretrained(
+        run_args.model_path, trust_remote_code=True).half().cuda()
+    logger.info("从{}加载模型成功".format(run_args.model_path))
+else:
+    logger.error("错误参数：底座模型必须是 ChatGLM 或者 BaiChuan")
+    raise ValueError("错误参数：底座模型必须是 ChatGLM 或者 BaiChuan")
+
+tokenizer = AutoTokenizer.from_pretrained(run_args.model_path, trust_remote_code=True)
+logger.info("从{}加载 tokenizer 成功".format(run_args.model_path))
+
+model = PeftModel.from_pretrained(model, run_args.lora_path).half()
+logger.info("加载 LoRa 参数成功")
 
 
-_css = """
-#del-btn {
-    max-width: 2.5em;
-    min-width: 2.5em !important;
-    height: 2.5em;
-    margin: 1.5em 0;
-}
-"""
+"""重载聊天机器人的数据预处理"""
+def postprocess(self, y):
+    if y is None:
+        return []
+    for i, (message, response) in enumerate(y):
+        y[i] = (
+            None if message is None else mdtex2html.convert((message)),
+            None if response is None else mdtex2html.convert(response),
+        )
+    return y
 
+gr.Chatbot.postprocess = postprocess
 
-def parse_codeblock(text):
+'''文本处理'''
+def parse_text(text):  # copy from https://github.com/GaiZhenbiao/ChuanhuChatGPT
     lines = text.split("\n")
+    lines = [line for line in lines if line != ""]
+    count = 0
     for i, line in enumerate(lines):
         if "```" in line:
-            if line != "```":
-                lines[i] = f'<pre><code class="{lines[i][3:]}">'
+            count += 1
+            items = line.split('`')
+            if count % 2 == 1:
+                lines[i] = f'<pre><code class="language-{items[-1]}">'
             else:
-                lines[i] = '</code></pre>'
+                lines[i] = f'<br></code></pre>'
         else:
             if i > 0:
-                lines[i] = "<br/>" + \
-                    line.replace("<", "&lt;").replace(">", "&gt;")
-    return "".join(lines)
+                if count % 2 == 1:
+                    line = line.replace("`", "\`")
+                    line = line.replace("<", "&lt;")
+                    line = line.replace(">", "&gt;")
+                    line = line.replace(" ", "&nbsp;")
+                    line = line.replace("*", "&ast;")
+                    line = line.replace("_", "&lowbar;")
+                    line = line.replace("-", "&#45;")
+                    line = line.replace(".", "&#46;")
+                    line = line.replace("!", "&#33;")
+                    line = line.replace("(", "&#40;")
+                    line = line.replace(")", "&#41;")
+                    line = line.replace("$", "&#36;")
+                lines[i] = "<br>"+line
+    text = "".join(lines)
+    return text
 
+# GLM 使用
+def predict(input, chatbot, max_length, top_p, temperature, history):
+    logger.debug("用户输入：{}".format(input))
+    chatbot.append((parse_text(input), ""))
+    for response, history in model.stream_chat(tokenizer, input, history, max_length=max_length, top_p=top_p,
+                                               temperature=temperature):
+        chatbot[-1] = (parse_text(input), parse_text(response))
+        logger.debug("模型回答：{}".format(response))
+        yield chatbot, history
 
-def predict(query, max_length, top_p, temperature):
-    global history
-    output, history = model.chat(
-        tokenizer, query=query, history=history,
-        max_length=max_length,
+# BaiChuan 使用
+def generate(input_text, chatbot, max_length, top_p, temperature):
+    logger.debug("用户输入：{}".format(input_text))
+    chatbot.append((parse_text(input_text), ""))
+    prompt = "Human: " + input_text + "\n\nAssistant: "
+    inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+    generation_config = GenerationConfig(
+        temperature=temperature,
         top_p=top_p,
-        temperature=temperature
+        do_sample=True,
+        repetition_penalty=2.0,
+        max_new_tokens=max_length,  # max_length=max_new_tokens+input_sequence
+
     )
-    readable_history.append((query, parse_codeblock(output)))
-    print(output)
-    return readable_history
+    generate_ids = model.generate(**inputs, generation_config=generation_config)
+    output = tokenizer.decode(generate_ids[0][len(inputs.input_ids[0]):])
+    logger.debug("模型回答：{}".format(output))
+    chatbot[-1] = (parse_text(input_text), parse_text(output))
+    return chatbot, None, None
 
 
-def save_history():
-    if not os.path.exists("outputs"):
-        os.mkdir("outputs")
-
-    s = [{"q": i[0], "o": i[1]} for i in history]
-    filename = f"save-{int(time.time())}.json"
-    with open(os.path.join("outputs", filename), "w", encoding="utf-8") as f:
-        f.write(json.dumps(s, ensure_ascii=False))
+def reset_user_input():
+    return gr.update(value='')
 
 
-def load_history(file):
-    global history, readable_history
-    try:
-        with open(file.name, "r", encoding='utf-8') as f:
-            j = json.load(f)
-            _hist = [(i["q"], i["o"]) for i in j]
-            _readable_hist = [(i["q"], parse_codeblock(i["o"])) for i in j]
-    except Exception as e:
-        print(e)
-        return readable_history
-    history = _hist.copy()
-    readable_history = _readable_hist.copy()
-    return readable_history
+def reset_state():
+    return [], []
 
+# 实现图形化界面
+if model != None:
+        
+    with gr.Blocks() as demo:
 
-def clear_history():
-    history.clear()
-    readable_history.clear()
-    return gr.update(value=[])
+        gr.HTML("""
+        <h1 align="center">
+                Chat-嬛嬛 v2.0
+        </h1>
+        """)
 
+        chatbot = gr.Chatbot()
 
-def create_ui():
-    with gr.Blocks(css=_css) as demo:
-        prompt = "输入你的内容..."
         with gr.Row():
-            with gr.Column(scale=3):
-                gr.Markdown(
-                    """<h2><center>Chat-嬛嬛 ChatGLM2 LoRA Tuning</center></h2>""")
-                with gr.Row():
-                    with gr.Column(variant="panel"):
-                        with gr.Row():
-                            max_length = gr.Slider(
-                                minimum=4, maximum=4096, step=4, label='Max Length', value=2048)
-                            top_p = gr.Slider(
-                                minimum=0.01, maximum=1.0, step=0.01, label='Top P', value=0.7)
-                        with gr.Row():
-                            temperature = gr.Slider(
-                                minimum=0.01, maximum=1.0, step=0.01, label='Temperature', value=0.95)
+            with gr.Column(scale=4):
+                with gr.Column(scale=12):
+                    user_input = gr.Textbox(
+                        show_label=False, placeholder="Input...", lines=10).style(container=False)
+                with gr.Column(min_width=32, scale=1):
+                    submitBtn = gr.Button("Submit", variant="primary")
 
-                        # with gr.Row():
-                        #     max_rounds = gr.Slider(minimum=1, maximum=50, step=1, label="最大对话轮数（调小可以显著改善爆显存，但是会丢失上下文）", value=20)
+            with gr.Column(scale=1):
+                emptyBtn = gr.Button("Clear History")
+                max_length = gr.Slider(
+                    0, 32768, value=8192, step=1.0, label="Maximum length", interactive=True)
+                top_p = gr.Slider(0, 1, value=0.8, step=0.01,
+                                label="Top P", interactive=True)
+                temperature = gr.Slider(
+                    0, 1.5, value=0.95, step=0.01, label="Temperature", interactive=True)
 
-                with gr.Row():
-                    with gr.Column(variant="panel"):
-                        with gr.Row():
-                            clear = gr.Button("清空对话（上下文）")
+        history = gr.State([])
 
-                        with gr.Row():
-                            save_his_btn = gr.Button("保存对话")
-                            load_his_btn = gr.UploadButton(
-                                "读取对话", file_types=['file'], file_count='single')
+        # BaiChuan
+        if "BaiChuan" in run_args.base_model:
+            submitBtn.click(generate, [user_input, chatbot, max_length, top_p, temperature], [
+                            chatbot, history], show_progress=True)
+        # GLM
+        if "ChatGLM" in run_args.base_model:
+            submitBtn.click(predict, [user_input, chatbot, max_length, top_p, temperature, history], [
+                        chatbot, history], show_progress=True)
+            
+        submitBtn.click(reset_user_input, [], [user_input])
 
-            with gr.Column(scale=7):
-                chatbot = gr.Chatbot(elem_id="chat-box",
-                                     show_label=False).style(height=800)
-                with gr.Row():
-                    message = gr.Textbox(
-                        placeholder=prompt, show_label=False, lines=2)
-                    clear_input = gr.Button("🗑️", elem_id="del-btn")
+        emptyBtn.click(reset_state, outputs=[chatbot, history], show_progress=True)
 
-                with gr.Row():
-                    submit = gr.Button("发送")
-
-        submit.click(predict, inputs=[
-            message,
-            max_length,
-            top_p,
-            temperature
-        ], outputs=[
-            chatbot
-        ])
-
-        clear.click(clear_history, outputs=[chatbot])
-        clear_input.click(lambda x: "", inputs=[message], outputs=[message])
-
-        save_his_btn.click(save_history)
-        load_his_btn.upload(load_history, inputs=[
-            load_his_btn,
-        ], outputs=[
-            chatbot
-        ])
-
-    return demo
-
-
-ui = create_ui()
-ui.queue().launch(
-    server_name="0.0.0.0",
-    server_port=35898,
-    share=True,
-    inbrowser=True
-)
+    demo.queue().launch(server_name="0.0.0.0", share=False,
+                        inbrowser=False, server_port=35898)

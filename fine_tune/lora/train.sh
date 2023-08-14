@@ -1,14 +1,14 @@
 python train.py \
-    --model_path MODEL_PATH \
-    --base_model ChatGLM2\
+    --model_path /root/autodl-tmp/BaiChuan \
+    --base_model BaiChuan-7B\
     --lora_rank 8 \
     --per_device_train_batch_size 64 \
     --gradient_accumulation_steps 1 \
-    --max_steps 4800 \
+    --max_steps 480 \
     --save_steps 240 \
     --save_total_limit 20 \
     --learning_rate 1e-4 \
     --fp16 \
     --remove_unused_columns false \
     --logging_steps 10 \
-    --output_dir ../../dataset/output
+    --output_dir ../../dataset/output-baichuan

@@ -15,6 +15,10 @@ import transformers
 from tqdm import tqdm
 import json
 # import bitsandbytes as bnb
+import sys
+# 导入 log 模块目录
+sys.path.append("../../")
+from log.logutli import Logger
 
 # dataclass：Python 类修饰符，数据类，封装了__init__()、 __repr__()和__eq__()函数
 @dataclass
@@ -48,7 +52,7 @@ def preprocess(tokenizer, config, example, max_seq_length):
     return {"input_ids": input_ids, "seq_len": len(prompt_ids)}
 
 
-def read_jsonl(path, max_seq_length, model_path, skip_overlength=False):
+def read_jsonl(path, max_seq_length, model_path, logger, skip_overlength=False):
     model_name = model_path
     tokenizer = transformers.AutoTokenizer.from_pretrained(
         model_name, trust_remote_code=True)
@@ -56,6 +60,7 @@ def read_jsonl(path, max_seq_length, model_path, skip_overlength=False):
         model_name, trust_remote_code=True, device_map='auto')
     with open(path, "r") as f:
         lst = json.load(f)
+        logger.debug("加载jsonl数据集，数据总量为{}".format(len(lst)))
         for example in tqdm(lst):
             feature = preprocess(tokenizer, config, example, max_seq_length)
             if skip_overlength and len(feature["input_ids"]) > max_seq_length:
@@ -172,10 +177,25 @@ class ModifiedTrainer13B(Trainer):
 
 def main():
 
+    log_id     = 'train'  
+    log_dir    = f'../../log/'
+    log_name   = '8-14-test-train.log'
+    log_level  = 'info'
+
+    # 初始化日志
+    logger = Logger(log_id, log_dir, log_name, log_level).logger
+    logger.info('开始 LoRA 训练')
+
     # Parse 命令行参数
     finetune_args, training_args = HfArgumentParser(
         (FinetuneArguments, TrainingArguments)
     ).parse_args_into_dataclasses()
+    
+    logger.debug("命令行参数")
+    logger.debug("finetune_args:")
+    logger.debug(finetune_args.__repr__())
+    logger.debug("training_args:")
+    logger.debug(training_args.__repr__())
 
     # 初始化底座模型
     
@@ -186,10 +206,13 @@ def main():
         model = AutoModel.from_pretrained(
             finetune_args.model_path, load_in_8bit=False, trust_remote_code=True, device_map="auto"
         )
+        logger.info("从{}加载模型成功".format(finetune_args.model_path))
     elif "BaiChuan" in finetune_args.base_model:
         model = AutoModelForCausalLM.from_pretrained(
             finetune_args.model_path, trust_remote_code=True, device_map="auto")
+        logger.info("从{}加载模型成功".format(finetune_args.model_path))
     else:
+        logger.error("错误参数：底座模型必须是 ChatGLM 或者 BaiChuan")
         raise ValueError("错误参数：底座模型必须是 ChatGLM 或者 BaiChuan")
 
     model.gradient_checkpointing_enable()
@@ -225,21 +248,32 @@ def main():
             target_modules= target_modules
         )
     else:
+        logger.error("错误参数：底座模型必须是 ChatGLM 或者 BaiChuan")
         raise ValueError("错误参数：底座模型必须是 ChatGLM 或者 BaiChuan")
 
     # 是否从断点继续训练
     # 源点训练
     if not finetune_args.continue_training:
         model = get_peft_model(model, peft_config)
+        logger.info("加载 LoRA 参数成功")
     else:
         if finetune_args.check_point == None:
+            logger.error("断点训练需要给出 checkpoint 地址")
             raise ValueError("断点训练需要给出 checkpoint 地址")
         model = PeftModel.from_pretrained(model, finetune_args.check_point, is_trainable=True)
+        logger.info("从{}加载断点成功".format(finetune_args.check_point))
 
     # 加载数据集
-    dataset = datasets.Dataset.from_generator(
-            lambda: read_jsonl(finetune_args.dataset_path, finetune_args.max_seq_length, finetune_args.model_path, finetune_args.skip_overlength)
-        )    
+    try:
+        dataset = datasets.Dataset.from_generator(
+                lambda: read_jsonl(finetune_args.dataset_path, finetune_args.max_seq_length, finetune_args.model_path, logger, finetune_args.skip_overlength)
+            ) 
+    except Exception as e:
+        logger.error("从{}加载数据集失败".format(finetune_args.dataset_path))
+        logger.error("错误信息为：")
+        logger.error(e.__repr__())
+        raise e   
+    logger.info("从{}加载数据集成功".format(finetune_args.dataset_path))
 
     # start train
     if "ChatGLM" in finetune_args.base_model:
@@ -264,11 +298,12 @@ def main():
                 args=training_args,
                 data_collator=lambda x : data_collator_baichuan(x, tokenizer),
             )
-
+    logger.info("成功加载 Trainer")
     trainer.train()
-
+    logger.info("训练完成，训练结果保存在{}".format(training_args.output_dir))
     # 保存模型
     model.save_pretrained(training_args.output_dir)
+    logger.info("模型参数保存在{}".format(training_args.output_dir))
 
 
 if __name__ == "__main__":

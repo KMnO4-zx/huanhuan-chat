@@ -28,8 +28,18 @@ pip install -r requirements.txt
 
 首先需要分别到 [Hugging Face Hub-THUDM](https://huggingface.co/THUDM/chatglm2-6b) 下载ChatGLM2-6B的模型文件，存放至 dataset/model 路径下,然后运行下面的命令：
 
+```shell
+cd run/gui
+bash run_gui.sh
+```
 
+该命令会在本地 8080 端口启动 Chat-嬛嬛的服务，在浏览器打开 localhost:8080 地址即可使用。
 
+### 全流程微调个性化 AI
+
+本仓库支持用户提供任一小说、剧本，指定人物角色，微调一个属于自己的、契合角色人设、具备高度智能的个性化 AI。
+
+#### 第一步 
 
 
 ## News

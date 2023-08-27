@@ -1,0 +1,13 @@
+langchain
+openai
+kor
+tiktoken
+tqdm
+python-dotenv
+transformers
+torch
+peft
+fastapi
+pydantic
+mdtex2html
+gradio

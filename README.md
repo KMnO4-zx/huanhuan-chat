@@ -24,6 +24,13 @@ cd ./huanhuan-chat
 pip install -r requirements.txt
 ```
 
+### 快速使用
+
+首先需要分别到 [Hugging Face Hub-THUDM](https://huggingface.co/THUDM/chatglm2-6b) 下载ChatGLM2-6B的模型文件，存放至 dataset/model 路径下,然后运行下面的命令：
+
+
+
+
 
 ## News
 

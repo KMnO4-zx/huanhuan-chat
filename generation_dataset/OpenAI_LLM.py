@@ -45,6 +45,3 @@ class OpenAI_LLM(LLM):
             "model": self.model_type
         }
         return _param_dict
-
-# llm = OpenAI_LLM()
-# print(llm('你好'))

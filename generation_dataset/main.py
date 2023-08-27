@@ -114,14 +114,14 @@ def read_dialogue(path):
     # path:字符串形式
     filename = path.split('/')[-1].split('.')[0]
     res = []
-    with open(f"./generation_dataset/output/{filename}.jsonl", mode='r', encoding='utf-8') as file:
+    with open(f"../dataset/train/lora/{filename}.jsonl", mode='r', encoding='utf-8') as file:
         for line in file.readlines():
             res.append(json.loads(line))
     return res
 
 def save_dataset(path, data):
     filename = path.split('/')[-1].split('.')[0]
-    with open(f"./generation_dataset/output/{filename}.json", mode='w', encoding='utf-8') as f:
+    with open(f"../dataset/train/lora/{filename}.json", mode='w', encoding='utf-8') as f:
         f.write(json.dumps(data, ensure_ascii=False))
 
 def generate_dataset(data, roles):
@@ -145,14 +145,14 @@ if __name__ == "__main__":
     # LOG
     local_time = time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime())
     log_id     = 'generation_dataset'  
-    log_dir    = f'../../log/'
+    log_dir    = f'../log/'
     log_name   = f'generation_dataset_log_{local_time}.log'
     log_level  = 'info'
     # 初始化日志
     logger = Logger(log_id, log_dir, log_name, log_level).logger
 
     # CONFIG
-    path = './generation_dataset/test.txt'  # 小说路径
+    path = '../dataset/input/lord_of_the_mysteries/nodel.txt'  # 小说路径
     roles = ['克莱恩', '小克']  # 要提取的角色名称
 
     # CODE

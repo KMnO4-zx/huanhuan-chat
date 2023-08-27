@@ -7,12 +7,12 @@ annotated-types==0.5.0
 anyio==3.7.1
 asttokens==2.2.1
 async-timeout @ file:///opt/conda/conda-bld/async-timeout_1664876359750/work
-attrs==23.1.0
+attrs @ file:///croot/attrs_1668696182826/work
 backcall==0.2.0
 Bottleneck @ file:///opt/conda/conda-bld/bottleneck_1657175564434/work
 brotlipy==0.7.0
 cchardet==2.1.7
-certifi @ file:///croot/certifi_1690232220950/work/certifi
+certifi==2023.7.22
 cffi @ file:///croot/cffi_1670423208954/work
 chardet==5.2.0
 charset-normalizer @ file:///tmp/build/80754af9/charset-normalizer_1630003229654/work
@@ -93,7 +93,7 @@ nvidia-cusolver-cu11==11.4.0.1
 nvidia-cusparse-cu11==11.7.4.91
 nvidia-nccl-cu11==2.14.3
 nvidia-nvtx-cu11==11.7.91
-openai==0.27.9
+openai @ file:///croot/openai_1682522392103/work
 openpyxl==3.0.10
 orjson==3.9.5
 packaging==23.1
@@ -136,6 +136,7 @@ safetensors==0.3.3
 scikit-learn @ file:///croot/scikit-learn_1690978916802/work
 scipy @ file:///croot/scipy_1691606680890/work/dist/scipy-1.11.1-cp39-cp39-linux_x86_64.whl#sha256=771fdae52630aa660eb5f4792df1a013cde34093b72f006c7ee1b7a031f02d0c
 semantic-version==2.10.0
+sentencepiece @ file:///croot/sentencepiece_1684523560119/work/python
 six==1.16.0
 sniffio==1.3.0
 SQLAlchemy==2.0.20

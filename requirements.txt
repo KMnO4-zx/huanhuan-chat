@@ -1,0 +1,6 @@
+langchain
+openai
+kor
+tiktoken
+tqdm
+python-dotenv

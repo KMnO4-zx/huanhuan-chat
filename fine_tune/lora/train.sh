@@ -1,4 +1,5 @@
 python train.py \
+    --dataset_path ../../dataset/train/lora/huanhuan.json \
     --model_path ../../dataset/model \
     --base_model ChatGLM2-6B\
     --lora_rank 8 \

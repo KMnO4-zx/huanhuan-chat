@@ -39,14 +39,71 @@ bash run_gui.sh
 
 本仓库支持用户提供任一小说、剧本，指定人物角色，微调一个属于自己的、契合角色人设、具备高度智能的个性化 AI。
 
-#### 第一步 
+#### 第一步 自动构建数据集
 
+选择心仪小说，将 txt 版本存放至 dataset/input 目录下，修改 generation_dataset/main.py 中的路径参数，运行命令：
+
+```shell
+cd generation_dataset
+bash generation.sh
+```
+
+运行完成后会自动在 dataset/train/lora 目录下生成数据集构建结果。
+
+### 第二步 微调个性化大模型
+
+基于上一步生成的数据集路径，修改 fine_tune/lora/train.sh 中的路径参数，然后运行命令：
+
+```shell
+cd fine_tune/lora
+bash train.sh
+```
+
+该命令会启动个性化大模型的 LoRA 微调。
+
+本项目也同时支持 ChatGLM1-6B、BaiChuan-7B、BaiChuan-13B 等开源大模型的微调，可根据注释修改 train.sh 中的参数实现微调。
+
+微调结果会输出在 dataset/output 目录下。
+
+### 第三步 部署微调模型
+
+基于上一步微调结果，可部署使用个性化微调模型，本项目支持 Notebook 代码调用、GUI 部署、API 部署三种部署方式。
+
+**Notebook 调用**
+
+本项目在 run/notebook/example.ipynb 文件中实现了微调全流程示例，并分别演示了 ChatGLM 系列模型、BaiChuan 系列模型的代码调用示例。
+
+**GUI 部署**
+
+本项目支持为个性化微调大模型部署可视化界面。
+
+基于微调结果修改 run/gui/run_gui.sh 中路径参数后，运行以下命令：
+
+```shell
+cd run/gui
+bash run_gui.sh
+```
+
+该命令会在本地 8080 端口启动一个可视化服务，直接访问 127.0.0.1:8080 地址即可使用。
+
+**API 部署**
+
+本项目支持为个性化微调大模型部署 API 访问。
+
+基于微调结果修改 run/api/main.py 中的路径参数后，运行以下命令：
+
+```shell
+cd run/api
+bash api.sh
+```
+
+该命令会在本地 8000 端口启动一个 API 服务，可以通过向 127.0.0.1:8000 发起 POST 请求，在参数中设定 prompt 为问题即可获取个性化微调大模型的回答。
 
 ## News
 
-[2023.08.xx]：推出 Chat-甄嬛 v2.0 版本
+[2023.08.28]：推出 Chat-甄嬛 v2.0 版本
 
-[2023.08.xx]：完成 v2.0 数据集自动构建模块。
+[2023.08.27]：完成 v2.0 数据集自动构建模块。
 
 [2023.08.23]：完成 v2.0 GUI、API 部署功能模块。
 
@@ -68,7 +125,7 @@ bash run_gui.sh
 
 V2.0:
 
-- [ ] 支持自定义语料库、角色风格，支持多种模型调用，支持多维度部署的 Chat-甄嬛 个性化 AI 系统。
+- [x] 支持自定义语料库、角色风格，支持多种模型调用，支持多维度部署的 Chat-甄嬛 个性化 AI 系统。
 
 V1.0：
 
@@ -80,18 +137,18 @@ V1.0：
 - [x] 实现V1.0Chat-甄嬛的训练及部署
 
 - [ ] 数据集生成流程实现
-    - [ ] 利用gpt从甄嬛传小说中提取特色对话集。
+    - [x] 利用gpt从甄嬛传小说中提取特色对话集。
     - [ ] 优化甄嬛传剧本提取对话集。
     - [ ] 基于hugging face上日常对话数据集+GPT prompt+Langchain 生成个性化日常对话数据集
     - [ ] 探究生成多轮对话数据集
 
 - [ ] 探索更多元的 Chat-甄嬛
     - [ ] 使用多种微调方法对ChatGLM2训练微调，找到最适合聊天机器人的微调方法。
-    - [ ] 尝试多种开源大模型（Baichuan13B、ChatGLM等），找到效果最好的开源大模型
+    - [x] 尝试多种开源大模型（Baichuan13B、ChatGLM等），找到效果最好的开源大模型
     - [ ] 寻找微调的最优参数
 
 - [ ] 打造更智能的 Chat-甄嬛
-    - [ ] 实现语音与甄嬛对话，生成数字人甄嬛
+    - [x] 实现语音与甄嬛对话，生成数字人甄嬛
     - [ ] 实现支持并发、高可用性部署
     - [ ] 提升推理速度
     - [ ] 优化开发前后端
@@ -109,13 +166,15 @@ V1.0：
 
 ## 人员贡献
 
-[不要葱姜蒜](https://github.com/KMnO4-zx)：整理数据集，完成SFT训练。
+[不要葱姜蒜](https://github.com/KMnO4-zx)：整理数据集，完成SFT训练，完成数据集自动构建流程
 
-[Logan Zou](https://github.com/nowadays0421)：完成 BaiChuan 训练及调用。
+[Logan Zou](https://github.com/nowadays0421)：完成 LoRA 微调脚本，完成 GUI、API 部署脚本
 
 [coderdeepstudy](https://github.com/coderdeepstudy)：Window环境下的Lora微调，服务器支持。
 
-[Bald0Wang](https://github.com/Bald0Wang)：完成甄嬛语音支持。
+[Bald0Wang](https://github.com/Bald0Wang)：完成甄嬛语音、数字人支持。
+
+[GKDGKD](https://github.com/GKDGKD)：完成日志模块
 ## 赞助
 
 如果您愿意请我们喝一杯咖啡，帮助我们打造更美丽的甄嬛，那就再好不过了~

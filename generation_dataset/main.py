@@ -1,13 +1,23 @@
-from OpenAI_LLM import OpenAI_LLM
-from kor.extraction import create_extraction_chain
-from kor.nodes import Object, Text, Number
+import os
+
+os.environ['HTTPS_PROXY']    = 'http://127.0.0.1:7890'
+os.environ["HTTP_PROXY"]     = 'http://127.0.0.1:7890'
+
+import json
+import time
+
 import tiktoken
-import json, time
+from kor.extraction import create_extraction_chain
+from kor.nodes import Number, Object, Text
+from OpenAI_LLM import OpenAI_LLM
 from tqdm import tqdm
+
 enc = tiktoken.get_encoding("cl100k_base")
 import sys
-# 导入 log 模块目录
-sys.path.append("../")
+
+# 导入 log 模块目录，huanhunan-chat下运行本脚本时，路径全部为"./"
+# generation_dataset下运行本脚本时，路径全部改为"../"
+sys.path.append("./")
 from log.logutli import Logger
 
 schema = Object(
@@ -121,7 +131,7 @@ def read_dialogue(path):
 
 def save_dataset(path, data):
     filename = path.split('/')[-1].split('.')[0]
-    with open(f"../dataset/train/lora/{filename}.json", mode='w', encoding='utf-8') as f:
+    with open(f"./dataset/train/lora/{filename}.json", mode='w', encoding='utf-8') as f:
         f.write(json.dumps(data, ensure_ascii=False))
 
 def generate_dataset(data, roles):
@@ -145,14 +155,14 @@ if __name__ == "__main__":
     # LOG
     local_time = time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime())
     log_id     = 'generation_dataset'  
-    log_dir    = f'../log/'
+    log_dir    = f'./log/result'
     log_name   = f'generation_dataset_log_{local_time}.log'
     log_level  = 'info'
     # 初始化日志
     logger = Logger(log_id, log_dir, log_name, log_level).logger
 
     # CONFIG
-    path = '../dataset/input/lord_of_the_mysteries/nodel.txt'  # 小说路径
+    path = './dataset/input/lord_of_the_mysteries/novel.txt'  # 小说路径
     roles = ['克莱恩', '小克']  # 要提取的角色名称
 
     # CODE

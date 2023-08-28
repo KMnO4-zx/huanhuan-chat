@@ -79,7 +79,9 @@ def print_logger(logger):
 
 ### 方式二：每个文件单独定义logger
 
-每个文件单独定义一个logger，写好参数即可。<b>注意路径!</b>
+每个文件单独定义一个logger，写好参数即可。<b>注意路径!</b> 防止python找不到log报错。
+<b>如果在终端的`huanhunan-chat`路径下运行脚本，路径全部为"./"；</b>
+<b>如果是在终端的 `huanhunan-chat/generation_dataset`下运行脚本，路径全部改为"../" </b>
 
 #### 情况1：
 假设你的文件路径为：`huanhuan-chat\data\log_demo_single.py`，为防止python找不到包，应按如下方式定义logger：

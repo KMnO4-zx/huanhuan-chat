@@ -1,5 +1,9 @@
 # Extract Dialogue
 
+>***本仓库只为`huanhuan-chat`泛化版的一部分内容（文本对话抽取），欢迎大家给`huanhuan-chat`仓库star！本仓库的最大贡献就是为泛化的Character AI提供了从小说中建立数据集的功能。***
+>
+>`huanhuan-chat: https://github.com/KMnO4-zx/huanhuan-chat.git`
+
 ## Show
 
 `repo`：https://github.com/KMnO4-zx/extract-dialogue.git
@@ -25,6 +29,12 @@
 - 在当前目录创建`.env`文件，并填入`OPENAI_API_KEY`。（***需要一个不限制请求次数的key，openai对于免费帐户的api限制为：每分钟请求至多请求三次，每天至多请求200次。对于从小说中提取对话来说，一天200次杯水车薪。***）
 - 把你要提取的小说或文本，放到当前目录，在`main.py`中修改`path`。
 - ***强烈建议您结合要提取的小说修改`main.py`中的`schema`示例。在下面的部分中有详细介绍`schema`。***
+- 修改main.py中的roles列表，再列表中填写要提取的角色的名称。比如在《西游记》中要提取悟空的对话，那就需要把所有有关孙悟空的名称写上。
+
+```python
+roles = ['孙悟空', '悟空', '石猴', '美猴王', '孙大圣', '齐天大圣']
+```
+
 - 运行`main.py`，`python main.py`
 
 > ***注意：gpt3.5收费标准2000token 0.002美元，提取一本小说花费大概在5美刀。***

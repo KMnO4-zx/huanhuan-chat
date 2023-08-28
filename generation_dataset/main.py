@@ -152,7 +152,7 @@ if __name__ == "__main__":
     logger = Logger(log_id, log_dir, log_name, log_level).logger
 
     # CONFIG
-    path = '../dataset/input/lord_of_the_mysteries/nodel.txt'  # 小说路径
+    path = '../dataset/input/lord_of_the_mysteries/novel.txt'  # 小说路径
     roles = ['克莱恩', '小克']  # 要提取的角色名称
 
     # CODE

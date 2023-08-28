@@ -175,11 +175,14 @@ V1.0：
 [Bald0Wang](https://github.com/Bald0Wang)：完成甄嬛语音、数字人支持。
 
 [GKDGKD](https://github.com/GKDGKD)：完成日志模块
+
+# Star History
+
+![](./image/star-history.png)
+
 ## 赞助
 
 如果您愿意请我们喝一杯咖啡，帮助我们打造更美丽的甄嬛，那就再好不过了~
 
-![赞助](image/赞助.jpg)
-
-另外，如果您有意向，我们也接受私人定制，欢迎联系本项目负责人[不要葱姜蒜](https://github.com/KMnO4-zx)
+如果您有意向，我们也接受私人定制，欢迎联系本项目负责人[不要葱姜蒜](https://github.com/KMnO4-zx)
 

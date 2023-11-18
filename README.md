@@ -8,7 +8,7 @@ Chat-甄嬛 2.0，实现了以《甄嬛传》为切入点，打造一套基于�
 
 目前，本项目已实现数据集自动构建、开源模型微调、多维度部署等核心功能模块，支持用户自定义输入语料、指定角色风格，同时基于 ChatGLM、ChatGLM2、BaiChuan 等多种开源大模型，测试效果良好，欢迎大家体验交流~
 
-目前LoRA微调技术参考[ChatGLM-Efficient-Tuning](https://github.com/hiyouga/ChatGLM-Efficient-Tuning)项目和[LLaMA-Efficient-Tuning](https://github.com/hiyouga/LLaMA-Efficient-Tuning)项目，欢迎给原作者项目star，所使用的[ChatGLM2-6B](https://github.com/THUDM/ChatGLM2-6B)模型、[BaiChuan](https://github.com/baichuan-inc/Baichuan-7B)模型也欢迎大家前去star。
+目前，本项目已支持的微调技术包括全量微调与 LoRA 高效微调；LoRA微调技术主要参考[ChatGLM-Efficient-Tuning](https://github.com/hiyouga/ChatGLM-Efficient-Tuning)项目和[LLaMA-Efficient-Tuning](https://github.com/hiyouga/LLaMA-Efficient-Tuning)项目，欢迎给原作者项目star，所使用的[ChatGLM2-6B](https://github.com/THUDM/ChatGLM2-6B)模型、[BaiChuan](https://github.com/baichuan-inc/Baichuan-7B)模型也欢迎大家前去star。
 
 bilibili介绍：[我也有自己的甄嬛啦！（chat嬛嬛项目）](https://www.bilibili.com/video/BV1dX4y1a73S/?spm_id_from=333.880.my_history.page.click&vd_source=1a432a45372ea0a0d1ec88a20d9cef2c)
 
@@ -63,11 +63,18 @@ bash train.sh
 
 本项目也同时支持 ChatGLM1-6B、BaiChuan-7B、BaiChuan-13B 等开源大模型的微调，可根据注释修改 train.sh 中的参数实现微调。
 
+本项目已更新支持个性化大模型的全量微调，基于 DeepSpeed 框架进行分布式训练，只需修改 fine_tune/full-scale/train.sh 中的路径参数，将 n_gpus 修改为本地卡数，然后运行命令：
+
+```shell
+cd finetune/full-scale
+bash train.sh
+```
+
 微调结果会输出在 dataset/output 目录下。
 
 ### 第三步 部署微调模型
 
-基于上一步微调结果，可部署使用个性化微调模型，本项目支持 Notebook 代码调用、GUI 部署、API 部署三种部署方式。
+基于上一步微调结果，可部署使用个性化微调模型，本项目支持 Notebook 代码调用、GUI 部署、API 部署三种部署方式。(注意，全量微调模型部署需要修改部署代码)
 
 **Notebook 调用**
 
@@ -100,6 +107,8 @@ bash api.sh
 该命令会在本地 8000 端口启动一个 API 服务，可以通过向 127.0.0.1:8000 发起 POST 请求，在参数中设定 prompt 为问题即可获取个性化微调大模型的回答。
 
 ## News
+
+[2023.11.18]：完成全量微调更新
 
 [2023.08.28]：推出 Chat-甄嬛 v2.0 版本
 

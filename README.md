@@ -219,3 +219,9 @@ print('嬛嬛：',response)
 - [邓宇文](https://github.com/GKDGKD)（Datawhale成员-广州大学）
 - [杜森](https://github.com/coderdeepstudy)（Datawhale成员-南阳理工学院）
 - [肖鸿儒](https://github.com/Hongru0306)（Datawhale成员-同济大学）
+
+<div align=center style="margin-top: 30px;">
+  <a href="https://github.com/KMnO4-zx/huanhuan-chat/graphs/contributors">
+    <img src="https://contrib.rocks/image?repo=KMnO4-zx/huanhuan-chat" />
+  </a>
+</div>

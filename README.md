@@ -1,197 +1,221 @@
-# Chat-嬛嬛 2.0
+# Chat-嬛嬛
 
-**Chat-甄嬛**是利用《甄嬛传》剧本中所有关于甄嬛的台词和语句，基于**ChatGLM2**进行**LoRA微调**得到的模仿甄嬛语气的聊天语言模型。
+**Chat-甄嬛**是利用《甄嬛传》剧本中所有关于甄嬛的台词和语句，基于大模型进行**LoRA微调**得到的模仿甄嬛语气的聊天语言模型。
 
 > 甄嬛，小说《后宫·甄嬛传》和电视剧《甄嬛传》中的女一号，核心女主角。原名甄玉嬛，嫌玉字俗气而改名甄嬛，为汉人甄远道之女，后被雍正赐姓钮祜禄氏，抬旗为满洲上三旗，获名“钮祜禄·甄嬛”。同沈眉庄、安陵容参加选秀，因容貌酷似纯元皇后而被选中。入宫后面对华妃的步步紧逼，沈眉庄被冤、安陵容变心，从偏安一隅的青涩少女变成了能引起血雨腥风的宫斗老手。雍正发现年氏一族的野心后令其父甄远道剪除，甄嬛也于后宫中用她的连环巧计帮皇帝解决政敌，故而深得雍正爱待。几经周折，终于斗垮了嚣张跋扈的华妃。甄嬛封妃时遭皇后宜修暗算，被皇上嫌弃，生下女儿胧月后心灰意冷，自请出宫为尼。然得果郡王爱慕，二人相爱，得知果郡王死讯后立刻设计与雍正再遇，风光回宫。此后甄父冤案平反、甄氏复起，她也生下双生子，在滴血验亲等各种阴谋中躲过宜修的暗害，最后以牺牲自己亲生胎儿的方式扳倒了幕后黑手的皇后。但雍正又逼甄嬛毒杀允礼，以测试甄嬛真心，并让已经生产过孩子的甄嬛去准格尔和亲。甄嬛遂视皇帝为最该毁灭的对象，大结局道尽“人类的一切争斗，皆因统治者的不公不义而起”，并毒杀雍正。四阿哥弘历登基为乾隆，甄嬛被尊为圣母皇太后，权倾朝野，在如懿传中安度晚年。
 
-Chat-甄嬛 2.0，实现了以《甄嬛传》为切入点，打造一套基于小说、剧本的**个性化 AI** 微调大模型完整流程，通过提供任一小说、剧本，指定人物角色，运行本项目完整流程，让每一位用户都基于心仪的小说、剧本打造一个属于自己的、契合角色人设、具备高度智能的个性化 AI。
+Chat-甄嬛，实现了以《甄嬛传》为切入点，打造一套基于小说、剧本的**个性化 AI** 微调大模型完整流程，通过提供任一小说、剧本，指定人物角色，运行本项目完整流程，让每一位用户都基于心仪的小说、剧本打造一个属于自己的、契合角色人设、具备高度智能的个性化 AI。
 
-目前，本项目已实现数据集自动构建、开源模型微调、多维度部署等核心功能模块，支持用户自定义输入语料、指定角色风格，同时基于 ChatGLM、ChatGLM2、BaiChuan 等多种开源大模型，测试效果良好，欢迎大家体验交流~
+> *Chat-嬛嬛模型累计下载量 15.6k，Modelscope 地址：*[*Link*](https://www.modelscope.cn/models/kmno4zx/huanhuan-chat-internlm2)   
+> *Chat-嬛嬛累计获得 500 star，huahuan-chat 项目地址：*[*Link*](https://github.com/KMnO4-zx/huanhuan-chat.git)，xlab-huanhuan-chat 项目地址：[*Link*](https://github.com/KMnO4-zx/xlab-huanhuan.git)  
 
-目前，本项目已支持的微调技术包括全量微调与 LoRA 高效微调；LoRA微调技术主要参考[ChatGLM-Efficient-Tuning](https://github.com/hiyouga/ChatGLM-Efficient-Tuning)项目和[LLaMA-Efficient-Tuning](https://github.com/hiyouga/LLaMA-Efficient-Tuning)项目，欢迎给原作者项目star，所使用的[ChatGLM2-6B](https://github.com/THUDM/ChatGLM2-6B)模型、[BaiChuan](https://github.com/baichuan-inc/Baichuan-7B)模型也欢迎大家前去star。
 
-bilibili介绍：[我也有自己的甄嬛啦！（chat嬛嬛项目）](https://www.bilibili.com/video/BV1dX4y1a73S/?spm_id_from=333.880.my_history.page.click&vd_source=1a432a45372ea0a0d1ec88a20d9cef2c)
+***OK，那接下来我将会带领大家亲自动手，一步步实现 Chat-甄嬛 的训练过程，让我们一起来体验一下吧~***
 
-## 使用方法
+## Step 1: 环境准备
 
-### 环境安装
+本文基础环境如下：
 
-首先下载本仓库，再用pip安装环境依赖：
+```
+----------------
+ubuntu 22.04
+python 3.12
+cuda 12.1
+pytorch 2.3.0
+----------------
+```
+> 本文默认学习者已安装好以上 Pytorch(cuda) 环境，如未安装请自行安装。
+
+首先 `pip` 换源加速下载并安装依赖包
 
 ```shell
-git clone https://github.com/KMnO4-zx/huanhuan-chat.git
-cd ./huanhuan-chat
-pip install -r requirements.txt
+# 升级pip
+python -m pip install --upgrade pip
+# 更换 pypi 源加速库的安装
+pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+
+pip install modelscope==1.16.1
+pip install transformers==4.43.1
+pip install accelerate==0.32.1
+pip install peft==0.11.1
+pip install datasets==2.20.0
 ```
 
-### 快速使用
+## Step 2: 数据准备
 
-首先需要分别到 [Hugging Face Hub-THUDM](https://huggingface.co/THUDM/chatglm2-6b) 下载ChatGLM2-6B的模型文件，存放至 dataset/model 路径下,然后运行下面的命令：
+首先，我们需要准备《甄嬛传》剧本数据，这里我们使用了《甄嬛传》剧本数据，我们可以查看一下原始数据的格式。
 
+```text
+第2幕
+（退朝，百官散去）
+官员甲：咱们皇上可真是器重年将军和隆科多大人。
+官员乙：隆科多大人，恭喜恭喜啊！您可是国家的大功臣啊！
+官员丙：年大将军，皇上对你可是垂青有加呀！
+官员丁：年大人，您可是皇上的股肱之臣哪！
+苏培盛（追上年羹尧）：年大将军请留步。大将军——
+年羹尧：苏公公，有何指教？
+苏培盛：不敢。皇上惦记大将军您的臂伤，特让奴才将这秘制的金创药膏交给大人，叫您使用。
+年羹尧（遥向金銮殿拱手）：臣年羹尧恭谢皇上圣恩！敢问苏公公，小妹今日在宫中可好啊？
+苏培盛：华妃娘娘凤仪万千、宠冠六宫啊，大将军您放心好了。
+年羹尧：那就有劳苏公公了。（转身离去）
+苏培盛：应该的。
+```
+
+每一句都有人物及对应的台词，所以就可以很简单的将这些数据处理成对话的形式，如下：
+
+```
+[
+    {"rloe":"官员甲", "content":"咱们皇上可真是器重年将军和隆科多大人。"},
+    {"rloe":"官员乙", "content":"隆科多大人，恭喜恭喜啊！您可是国家的大功臣啊！"},
+    {"rloe":"官员丙", "content":"年大将军，皇上对你可是垂青有加呀！"},
+    {"rloe":"官员丁", "content":"年大人，您可是皇上的股肱之臣哪！"},
+    {"rloe":"苏培盛", "content":"年大将军请留步。大将军——"},
+    ...
+]
+```
+
+然后再将我们关注的角色的对话提取出来，形成 QA 问答对。对于这样的数据，我们可以使用正则表达式或者其他方法进行快速的提取，并抽取出我们关注的角色的对话。
+
+然后很多情况下，我们并没有这样优秀的台词格式数据。所以我们可能就需要从一大段文本中抽取角色的对话数据，然后将其转换成我们需要的格式。
+
+比如《西游记白话文》，我们可以看到他的文本是这样的。对于这样的文本，那我们就需要借助大模型的能力，从文本中提取出角色和角色对应的对话。然后再筛选出我们需要的橘角色对话。
+
+> 可以借助一个小工具：[*extract-dialogue*](https://github.com/KMnO4-zx/extract-dialogue.git) 从文本中提取对话。
+    
+```
+......
+原来孙悟空走了以后，有一个混世魔王独占了水帘洞，并且抢走了许多猴子猴孙。孙悟空听到这些以后，气得咬牙跺脚。他问清了混世魔王的住处，决定找混世魔王报仇，便驾着筋斗云，朝北方飞去。
+
+不一会儿，孙悟空就来到混世魔王的水脏洞前，对门前的小妖喊到∶“你家那个狗屁魔王，多次欺负我们猴子。我今天来，要和那魔王比比高低！
+
+”小妖跑进洞里，报告魔王。魔王急忙穿上铁甲，提着大刀，在小妖们的簇拥下走出洞门。
+
+孙悟空赤手空拳，夺过了混世魔王的大刀，把他劈成了两半。然后，拔下一把毫毛咬碎喷了出去，毫毛变成许多小猴子，直杀进洞里，把所有的妖精全杀死，然后救出被抢走的小猴子，放了一把火烧了水脏洞。
+......
+```
+
+> chat-甄嬛 的原始数据：[*甄嬛传*](https://github.com/KMnO4-zx/huanhuan-chat/tree/master/dataset/input/huanhuan)  
+> 西游记白话文原始数据：[*西游记*](https://github.com/KMnO4-zx/huanhuan-chat/blob/master/dataset/input/wukong/%E8%A5%BF%E6%B8%B8%E8%AE%B0%E7%99%BD%E8%AF%9D%E6%96%87.txt)
+
+最后再将其整理成 `json` 格式的数据，如下：
+
+```
+[
+    {
+        "instruction": "小姐，别的秀女都在求中选，唯有咱们小姐想被撂牌子，菩萨一定记得真真儿的——",
+        "input": "",
+        "output": "嘘——都说许愿说破是不灵的。"
+    },
+    {
+        "instruction": "这个温太医啊，也是古怪，谁不知太医不得皇命不能为皇族以外的人请脉诊病，他倒好，十天半月便往咱们府里跑。",
+        "input": "",
+        "output": "你们俩话太多了，我该和温太医要一剂药，好好治治你们。"
+    },
+    {
+        "instruction": "嬛妹妹，刚刚我去府上请脉，听甄伯母说你来这里进香了。",
+        "input": "",
+        "output": "出来走走，也是散心。"
+    }
+]
+```
+
+> Chat-嬛嬛 的数据：[*chat-甄嬛*](https://github.com/datawhalechina/self-llm/blob/master/dataset/huanhuan.json)
+
+所以，在这一步处理数据的大致思路就是：
+
+***1. 从原始数据中提取出角色和对话 &emsp;2. 筛选出我们关注的角色的对话 &emsp;3. 将对话转换成我们需要的格式***
+
+> *这一步也可以增加数据增强的环节，比如利用两到三条数据作为 example 丢给LLM，让其生成风格类似的数据。再或者也可以找一部分日常对话的数据集，使用 RAG 生成一些固定角色风格的对话数据。这里大家可以完全放开的大胆去尝试！*
+
+## Step 3: 模型训练
+
+那这一步，大家可能再熟悉不过了。在`self-llm`的每一个模型中，都会有一个 `Lora` 微调模块，我们只需要将数据处理成我们需要的格式，然后再调用我们的训练脚本即可。
+
+此处选择我们选择 `LLaMA3_1-8B-Instruct` 模型进行微调，首先还是要下载模型，创建一个`model_download.py`文件，输入以下内容：
+
+```python
+import torch
+from modelscope import snapshot_download, AutoModel, AutoTokenizer
+import os
+
+model_dir = snapshot_download('LLM-Research/Meta-Llama-3.1-8B-Instruct', cache_dir='/root/autodl-tmp', revision='master')
+```
+
+> 注意：记得修改 `cache_dir` 为你的模型下载路径哦~
+
+其次，准备训练代码。对于熟悉 `self-llm` 的同学来说，这一步可能再简单不过了，在此处我会在当前目录下放置`train.py`，大家修改其中的数据集路径和模型路径即可。
+
+> *当然也可以使用 `self-llm` 中的 `lora` 微调教程。教程地址：[Link](https://github.com/datawhalechina/self-llm/blob/master/models/LLaMA3/04-LLaMA3-8B-Instruct%20Lora%20%E5%BE%AE%E8%B0%83.md)*
+
+在命令行运行以下指令：
+    
 ```shell
-cd run/gui
-bash run_gui.sh
+python train.py
 ```
 
-该命令会在本地 8080 端口启动 Chat-嬛嬛的服务，在浏览器打开 localhost:8080 地址即可使用。
+> *注意：记得修改 `train.py` 中的数据集路径和模型路径哦~*
 
-### 全流程微调个性化 AI
+训练大概会需要 *20 ~ 30* 分钟的时间，训练完成之后会在`output`目录下生成`lora`模型。可以使用以下代码进行测试：
 
-本仓库支持用户提供任一小说、剧本，指定人物角色，微调一个属于自己的、契合角色人设、具备高度智能的个性化 AI。
+```python
+from transformers import AutoModelForCausalLM, AutoTokenizer
+import torch
+from peft import PeftModel
 
-#### 第一步 自动构建数据集
+mode_path = './LLM-Research/Meta-Llama-3___1-8B-Instruct'
+lora_path = './output/llama3_1_instruct_lora/checkpoint-699' # 这里改称你的 lora 输出对应 checkpoint 地址
 
-选择心仪小说，将 txt 版本存放至 dataset/input 目录下，修改 generation_dataset/main.py 中的路径参数，运行命令：
+# 加载tokenizer
+tokenizer = AutoTokenizer.from_pretrained(mode_path, trust_remote_code=True)
 
-```shell
-cd generation_dataset
-bash generation.sh
+# 加载模型
+model = AutoModelForCausalLM.from_pretrained(mode_path, device_map="auto",torch_dtype=torch.bfloat16, trust_remote_code=True).eval()
+
+# 加载lora权重
+model = PeftModel.from_pretrained(model, model_id=lora_path)
+
+prompt = "嬛嬛你怎么了，朕替你打抱不平！"
+
+messages = [
+        {"role": "system", "content": "假设你是皇帝身边的女人--甄嬛。"},
+        {"role": "user", "content": prompt}
+]
+
+input_ids = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+
+# print(input_ids)
+
+model_inputs = tokenizer([input_ids], return_tensors="pt").to('cuda')
+generated_ids = model.generate(model_inputs.input_ids,max_new_tokens=512)
+
+generated_ids = [
+    output_ids[len(input_ids):] for input_ids, output_ids in zip(model_inputs.input_ids, generated_ids)
+]
+response = tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
+print('皇上：', prompt)
+print('嬛嬛：',response)
 ```
 
-运行完成后会自动在 dataset/train/lora 目录下生成数据集构建结果。
-
-### 第二步 微调个性化大模型
-
-基于上一步生成的数据集路径，修改 fine_tune/lora/train.sh 中的路径参数，然后运行命令：
-
-```shell
-cd fine_tune/lora
-bash train.sh
+```
+皇上： 嬛嬛你怎么了，朕替你打抱不平！
+嬛嬛： 皇上，臣妾不是故意的。
 ```
 
-该命令会启动个性化大模型的 LoRA 微调。
+接下来，我们就可以使用这个嬛嬛模型进行对话了~   
+有兴趣的同学可以尝试使用 `self-llm` 中的其他模型进行微调，检验你的学习成果！
 
-本项目也同时支持 ChatGLM1-6B、BaiChuan-7B、BaiChuan-13B 等开源大模型的微调，可根据注释修改 train.sh 中的参数实现微调。
+## 写在最后
 
-本项目已更新支持个性化大模型的全量微调，基于 DeepSpeed 框架进行分布式训练，只需修改 fine_tune/full-scale/train.sh 中的路径参数，将 n_gpus 修改为本地卡数，然后运行命令：
+*Chat-嬛嬛是在去年LLM刚火起来的时候，我们觉得如果不做点什么的话，可能会错过很多有趣的事情。于是就和几个小伙伴一起，花了很多时间，做了这个项目。在这个项目中，我们学到了很多，也遇到了很多问题，但是我们都一一解决了。并且Chat-嬛嬛也获得了奖项，让项目得到了很多人的关注。所以，我觉得这个项目是非常有意义的，也是非常有趣的。*
 
-```shell
-cd finetune/full-scale
-bash train.sh
-```
+- *2023 讯飞星火杯人认知大模型场景创新赛 Top50*
+- *2024 书生·浦语大模型挑战赛（春季赛）创意应用奖 Top12*
 
-微调结果会输出在 dataset/output 目录下。
+### Chat-嬛嬛贡献者
 
-### 第三步 部署微调模型
-
-基于上一步微调结果，可部署使用个性化微调模型，本项目支持 Notebook 代码调用、GUI 部署、API 部署三种部署方式。(注意，全量微调模型部署需要修改部署代码)
-
-**Notebook 调用**
-
-本项目在 run/notebook/example.ipynb 文件中实现了微调全流程示例，并分别演示了 ChatGLM 系列模型、BaiChuan 系列模型的代码调用示例。
-
-**GUI 部署**
-
-本项目支持为个性化微调大模型部署可视化界面。
-
-基于微调结果修改 run/gui/run_gui.sh 中路径参数后，运行以下命令：
-
-```shell
-cd run/gui
-bash run_gui.sh
-```
-
-该命令会在本地 8080 端口启动一个可视化服务，直接访问 127.0.0.1:8080 地址即可使用。
-
-**API 部署**
-
-本项目支持为个性化微调大模型部署 API 访问。
-
-基于微调结果修改 run/api/main.py 中的路径参数后，运行以下命令：
-
-```shell
-cd run/api
-bash api.sh
-```
-
-该命令会在本地 8000 端口启动一个 API 服务，可以通过向 127.0.0.1:8000 发起 POST 请求，在参数中设定 prompt 为问题即可获取个性化微调大模型的回答。
-
-## News
-
-[2023.11.18]：完成全量微调更新
-
-[2023.08.28]：推出 Chat-甄嬛 v2.0 版本
-
-[2023.08.27]：完成 v2.0 数据集自动构建模块。
-
-[2023.08.23]：完成 v2.0 GUI、API 部署功能模块。
-
-[2023.08.13]：完成 v2.0 本地微调功能模块。
-
-[2023.08.11]：完成 Chat-甄嬛 v2.0 架构设计。
-
-[2023.08.06]：完成整体架构设计，参赛科大讯飞“星火杯”。
-
-[2023.07.14]：完成 BaiChuan 模型训练及 web 调用，完成初步语音支持及数据集处理。
-
-[2023.07.12]：完成RM、RLHF训练（存在问题），新的小伙伴加入项目。
-
-[2023.07.11]：优化数据集，解决prompt句末必须携带标点符号的问题。
-
-[2023.07.09]：完成初次LoRA训练。
-
-## Edition
-
-V2.0:
-
-- [x] 支持自定义语料库、角色风格，支持多种模型调用，支持多维度部署的 Chat-甄嬛 个性化 AI 系统。
-
-V1.0：
-
-- [x] 基于《甄嬛传》剧本、ChatGLM2、Lora 微调得到初代的chat-甄嬛聊天模型。
-
-
-## To do
-
-- [x] 实现V1.0Chat-甄嬛的训练及部署
-
-- [ ] 数据集生成流程实现
-    - [x] 利用gpt从甄嬛传小说中提取特色对话集。
-    - [ ] 优化甄嬛传剧本提取对话集。
-    - [ ] 基于hugging face上日常对话数据集+GPT prompt+Langchain 生成个性化日常对话数据集
-    - [ ] 探究生成多轮对话数据集
-
-- [ ] 探索更多元的 Chat-甄嬛
-    - [ ] 使用多种微调方法对ChatGLM2训练微调，找到最适合聊天机器人的微调方法。
-    - [x] 尝试多种开源大模型（Baichuan13B、ChatGLM等），找到效果最好的开源大模型
-    - [ ] 寻找微调的最优参数
-
-- [ ] 打造更智能的 Chat-甄嬛
-    - [x] 实现语音与甄嬛对话，生成数字人甄嬛
-    - [ ] 实现支持并发、高可用性部署
-    - [ ] 提升推理速度
-    - [ ] 优化开发前后端
-    - [ ] 使用Langchain与huanhuan-chat结合。
-
-- [x] 打造**个性化微调大模型通用流程**！ 
-
-## 案例展示
-
-![侍寝](image/侍寝.png)
-
-![晚上有些心累](image/晚上有些心累.png)
-
-![午饭吃什么](image/午饭吃什么.png)
-
-## 人员贡献
-
-[不要葱姜蒜](https://github.com/KMnO4-zx)：整理数据集，完成SFT训练，完成数据集自动构建流程
-
-[Logan Zou](https://github.com/nowadays0421)：完成 LoRA 微调脚本，完成 GUI、API 部署脚本
-
-[coderdeepstudy](https://github.com/coderdeepstudy)：Window环境下的Lora微调，服务器支持。
-
-[Bald0Wang](https://github.com/Bald0Wang)：完成甄嬛语音、数字人支持。
-
-[GKDGKD](https://github.com/GKDGKD)：完成日志模块
-
-# Star History
-
-![](./image/star-history-2023116.png)
-
-## 赞助
-
-如果您愿意请我们喝一杯咖啡，帮助我们打造更美丽的甄嬛，那就再好不过了~
-
-如果您有意向，我们也接受私人定制，欢迎联系本项目负责人[不要葱姜蒜](https://github.com/KMnO4-zx)
-
+- [宋志学](https://github.com/KMnO4-zx)（Datawhale成员-中国矿业大学(北京)）
+- [邹雨横](https://github.com/logan-zou)（Datawhale成员-对外经济贸易大学）
+- [王熠明](https://github.com/Bald0Wang)（Datawhale成员-宁夏大学）
+- [邓宇文](https://github.com/GKDGKD)（Datawhale成员-广州大学）
+- [杜森](https://github.com/coderdeepstudy)（Datawhale成员-南阳理工学院）
+- [肖鸿儒](https://github.com/Hongru0306)（Datawhale成员-同济大学）
